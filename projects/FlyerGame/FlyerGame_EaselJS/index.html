@@ -1,0 +1,349 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>EaselJS Example: Displaying icons using BitmapAnimation and SpriteSheet</title>
+
+
+<!--
+//**************************************************
+//IMPORTS - CHOOSE WHICH BUILT IN CLASSES WILL HELP YOU
+//**************************************************
+-->
+<link href="styles/styles.css" rel="stylesheet" type="text/css" />
+<script src="./lib/easel.js"></script>
+
+
+<script>
+
+//**************************************************
+//EXTEND - Give custom collision detection abilities to key classes. EaselJS supports none built-in.
+//**************************************************
+BitmapAnimation.prototype.hitTestObject = Bitmap.prototype.hitTestObject = function (hitter) {
+    return HIT_DETECTION_RADIUS > Math.sqrt(Math.pow(Math.abs(this.x - hitter.x), 2) + Math.pow(Math.abs(this.y - hitter.y), 2));
+}
+
+
+//**************************************************
+//PROPERTIES - Available inside & outside of functions
+//**************************************************
+//DISPLAY
+var canvas;
+var stage;
+var HIT_DETECTION_RADIUS = 60;
+
+//KEYS
+var KEYCODE_UP 		= 38;		 
+var KEYCODE_DOWN 	= 40; 
+var KEYCODE_LEFT 	= 37; 
+var KEYCODE_RIGHT 	= 39; 
+
+//IMAGES
+var background_image 	= new Image();
+var blimp_image 		= new Image();
+var biplane_image 		= new Image();
+var flyer_image 		= new Image();
+
+//BITMAPS
+var background_bitmap;
+var blimp1_bitmap;
+var blimp2_bitmap;
+var biplane1_bitmap;
+var biplane2_bitmap;
+var flyer_bitmapanimation;
+
+//TEXT
+var score_text;
+
+
+//************************************************************
+//FUNCTIONS - REUSABLE GROUPS OF CODE
+//************************************************************
+function init() {
+	//find canvas and load images, wait for last image to load
+	canvas = document.getElementById("main_canvas");
+	
+	//WAIT FOR THE 'LAST' LOADED AND 'LARGEST' IMAGE 
+	background_image.onload = onBackgroundImageLoad;
+	
+	//LOAD IMAGES
+	blimp_image.src 	= "./assets/images/blimp.png";
+	biplane_image.src 	= "./assets/images/biplane.png";
+	flyer_image.src 	= "./assets/images/flyer.png";
+	background_image.src = "./assets/images/background.png";
+	
+}
+function onBackgroundImageLoad() {
+	
+	// CREATE NEW STAGE (TO DRAW SPRITES ON) WITHIN THE CANVAS (HTML DEFINED AREA)
+	stage = new Stage(canvas);
+	
+	//BACKGROUND
+	background_bitmap = new Bitmap (background_image);
+	background_bitmap.x = background_bitmap.y = 0;
+	stage.addChild(background_bitmap);	
+		
+	//BIPLANES
+	var biplane1_bitmap = new Bitmap (biplane_image);
+	biplane1_bitmap.x = biplane1_bitmap.y = 120;
+	stage.addChild(biplane1_bitmap);	
+	var biplane2_bitmap = new Bitmap (biplane_image);
+	biplane2_bitmap.x = biplane2_bitmap.y = 350;
+	stage.addChild(biplane2_bitmap);	
+		
+	//BLIMPS
+	blimp1_bitmap = new Bitmap (blimp_image);
+	blimp1_bitmap.x = blimp1_bitmap.y = 200;
+	stage.addChild(blimp1_bitmap);	
+	blimp2_bitmap = new Bitmap (blimp_image);
+	blimp2_bitmap.x = blimp2_bitmap.y = 440;
+	stage.addChild(blimp2_bitmap);	
+		 
+	//FLYER, GIVE 'fly' MANY FRAMES TO SLOW ITS ANIMATION
+	var flyer_data = {
+						images:[flyer_image], 
+						frames:{width:68, height:80,regX:0, regY:0},
+						animations: {
+							fly: {
+								frames: [1,1,1,1,1,0,0,0,0,0,0],
+								next: "fly"
+							},
+							idle: {
+								frames: [0]
+							}
+						}
+					};
+
+	var flyer_spriteSheet  = new SpriteSheet(flyer_data);
+	flyer_bitmapanimation = new BitmapAnimation(flyer_spriteSheet);
+ 	flyer_bitmapanimation.x = 220;
+ 	flyer_bitmapanimation.y = 520;
+ 	flyer_bitmapanimation.gotoAndStop("idle");
+ 	stage.addChild(flyer_bitmapanimation);
+ 	
+	//TEXT
+ 	score_text = new Text("0", "bold 30px Arial", "#000000");
+	score_text.textAlign = "left";
+	score_text.x = 10;
+	score_text.y = 50;
+	stage.addChild(score_text)
+	
+	//INITIALLY START SCORE AT 0
+	setScore (0);
+		
+	//CONTROL ANIMATION - EACH 'LISTENER' RECIEVES A 'tick' METHOD-CALL MANY TIMES PER SECOND
+	Ticker.setFPS(60); // low, so we can see the icons
+	Ticker.addListener(stage);
+	
+	////////////////////////////////////////////////////
+	//SET UNIQUE SPEED FOR EACH ENEMY &
+	//INSTRUCT ENEMY TO RUN ITS GAME LOOP EACH FRAME
+	////////////////////////////////////////////////////
+	biplane1_bitmap.speed = 4;
+	biplane1_bitmap.tick = moveRight;
+	
+	biplane2_bitmap.speed = 2; 
+	biplane2_bitmap.tick = moveRight;
+	
+	blimp1_bitmap.speed = 2;
+	blimp1_bitmap.tick = moveLeft;
+	
+	blimp2_bitmap.speed = 1;
+	blimp2_bitmap.tick = moveLeft;
+	
+
+}
+
+
+////////////////////////////////////////////////////
+//DISPLAY THE SCORE
+////////////////////////////////////////////////////
+function setScore (aScore_num) {
+	score_text.text = "Score: " + aScore_num;
+}
+
+
+
+
+////////////////////////////////////////////////////
+//HANDLE ENEMY THAT MOVE LEFT
+////////////////////////////////////////////////////
+function moveLeft (tickTime) {	
+	
+	//REFERENCE TO ENEMY
+	var enemy = this;
+	
+	//MOVE THE ENEMY FORWARD
+	enemy.x = enemy.x - enemy.speed;
+	
+	//RESET POSITION IF OFFSCREEN
+	if (enemy.x < -100) {
+		enemy.x = 800;
+	}
+	
+	//COLLISION DETECTION 'DID ENEMY HIT FLYER?'
+	if (enemy.hitTestObject(flyer_bitmapanimation)) {
+		youLose();
+    }
+};
+
+////////////////////////////////////////////////////
+//HANDLE ENEMY THAT MOVE RIGHT
+////////////////////////////////////////////////////
+function moveRight (tickTime) {
+	
+	//REFERENCE TO ENEMY
+	var enemy = this
+	
+	//MOVE THE ENEMY FORWARD
+	enemy.x = enemy.x + enemy.speed;
+	
+	//RESET POSITION IF OFFSCREEN
+	if (enemy.x > 800) {
+		enemy.x = -100;
+	}
+	
+	//COLLISION DETECTION 'DID ENEMY HIT FLYER?'
+	if (enemy.hitTestObject(flyer_bitmapanimation)) {
+		youLose();
+    }
+};
+
+
+
+
+////////////////////////////////////////////////////
+//PLAY A SOUND
+////////////////////////////////////////////////////
+
+//SETUP (ONE TIME)
+//var winGameSound:WinGameSound = new WinGameSound();
+//var loseGameSound:LoseGameSound = new LoseGameSound();
+//var moveFlyerSound:MoveFlyerSound = new MoveFlyerSound();
+
+//PLAY WHEN NEEDED
+function playWinGameSound () {
+	//winGameSound.play();
+}
+function playLoseGameSound () {
+	//loseGameSound.play();
+}
+function playMoveFlyerSound () {
+	//moveFlyerSound.play();
+}
+
+////////////////////////////////////////////////////
+//OUTPUT A VICTORY MESSAGE AND 'STOP' THE GAME
+////////////////////////////////////////////////////
+function youWin() {
+	
+	//MESSAGE
+	//alert("You Won the Game!");
+	
+	//SET SCORE
+	setScore (100);
+	
+	//PLAY SOUND
+	playWinGameSound();
+	
+	//END GAME, STOP LISTENTING TO EVENTS
+	document.onkeydown = null;
+	document.onkeyup   = null;
+	Ticker.setPaused(true);
+
+	
+	
+}
+
+
+////////////////////////////////////////////////////
+//OUTPUT A FAILURE MESSAGE AND 'STOP' THE GAME
+////////////////////////////////////////////////////
+function youLose() {
+	
+	//MESSAGE
+	//alert("You Lost the Game!");
+	
+	//SET SCORE
+	setScore (-100);
+	
+	//PLAY SOUND
+	playLoseGameSound();
+	
+	//END GAME
+	document.onkeydown = null;
+	document.onkeyup   = null;
+	Ticker.setPaused(true);
+
+}
+
+
+
+
+//**************************************************
+//EVENTS - REACT TO KEYS, MOUSE, AND OTHER THINGS
+//**************************************************
+document.onkeydown = onKeyboardKeyDown;
+document.onkeyup = onKeyboardKeyUp;
+
+////////////////////////////////////////////////////
+//KEYBOARD KEY PRESSED
+////////////////////////////////////////////////////
+function onKeyboardKeyDown(event) {
+	
+	//FIX CROSS-BROWSER ISSUE, IF EXISTS
+	if(!event){ var event = window.event; }
+	
+	var y = event.keyCode;
+	
+	//REACT TO 4 ARROW KEYS
+	if (event.keyCode == KEYCODE_UP) {
+		flyer_bitmapanimation.y = flyer_bitmapanimation.y - 30;
+		playMoveFlyerSound();
+	} else if (event.keyCode == KEYCODE_DOWN) {
+		flyer_bitmapanimation.y = flyer_bitmapanimation.y + 30;
+		playMoveFlyerSound();
+	} else if (event.keyCode == KEYCODE_LEFT) {
+		flyer_bitmapanimation.x = flyer_bitmapanimation.x - 30;
+		playMoveFlyerSound();
+	} else if (event.keyCode == KEYCODE_RIGHT) {
+		flyer_bitmapanimation.x = flyer_bitmapanimation.x + 30;
+		playMoveFlyerSound();
+	}
+	
+	//WIN WHEN YOU REACH THE Tflyer_bitmapanimationEEN
+	if (flyer_bitmapanimation.y < 20 && Ticker.getPaused() != "true") {
+		youWin();
+	}
+	
+	//ANIMATE A LITTLE
+	if (flyer_bitmapanimation.currentAnimation != "fly") {
+		flyer_bitmapanimation.gotoAndPlay("fly");
+	}
+
+};
+
+////////////////////////////////////////////////////
+//KEYBOARD KEY RELEASED
+////////////////////////////////////////////////////
+function onKeyboardKeyUp (event) {
+	
+	//ANIMATE A LITTLE
+	flyer_bitmapanimation.gotoAndStop("idle");
+};
+
+
+
+
+</script>
+</head>
+	
+<body onload="init();">
+	<div class="description">
+	Simple, complete <strong>Flyer Game</strong>.
+	</div>
+	<div class="canvasHolder">
+		<canvas id="main_canvas" width="800" height="600" style="background-color:#FFFFFF"></canvas>
+	</div>
+</body>
+</html>
