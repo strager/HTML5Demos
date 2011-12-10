@@ -507,7 +507,6 @@ function onTickToMoveRight (tickTime) {
     }
 }
 
-
 //STOP THE GAME
 function onStopGame () {
 	//done on delay, so stage can redraw one last time before ending

@@ -1,0 +1,49 @@
+body {
+	background-color: #111;
+	font-family: sans-serif;
+	font-size: 14px;
+	color: #CCC;
+	width : 90%;
+	height : 90%;
+	line-height: 1.5;
+	margin: 0;
+}
+
+a:active, a:visited, a:link
+{
+	color: #CCC;
+}
+
+a:hover
+{
+	text-decoration:none;
+}
+
+.canvasHolderDiv_class {
+	width: 800px;
+	height: 600px;
+	border: solid 15px #222;
+	background-color: #FFFFFF;
+	float: left;
+}
+.informationDiv_class {
+	padding-top: 15px;
+	background-color: #222;
+	float: none;
+}	
+.menuDiv_class {
+	padding-top: 15px;
+	background-color: #222;
+	float: none;
+}
+.debugDiv_class {
+	padding-top: 15px;
+	background-color: #222;
+	float: none;
+}
+
+
+
+strong {
+	color: #FFF;
+}

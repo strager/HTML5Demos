@@ -1,0 +1,58 @@
+<!--
+//**************************************************
+//HTML HEADER
+//**************************************************
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>HTML5 FlyerGame by RivelloMultimediaConsulting.com</title>
+
+
+<!--
+//**************************************************
+//IMPORTS
+//**************************************************
+-->
+<link href="styles/styles.css" rel="stylesheet" type="text/css" />
+<script src="./lib/easel.js"></script>
+<script src="./lib/sound.js"></script>
+
+<!--
+//**************************************************
+//MAIN SCRIPT
+//**************************************************
+-->
+<script src="./index.js"></script>
+</head>
+	
+<!--
+//**************************************************
+//HTML CONTENT
+//**************************************************
+-->
+<body onload="onBodyLoad();">
+	<div class="canvasHolderDiv_class" >
+		<canvas id="main_canvas" width = "800" height = "600" ></canvas>
+	</div>
+	<div class="informationDiv_class" >
+		<strong>Info: </strong>
+		<BR>
+		Title: Flyer Game
+		<BR>
+		Technology: HTML5 w/ EaselJS & SoundJS
+		<BR>
+		Instructions: Use up, down, left, right to reach the top.
+	</div> 
+	<HR>
+	<div class="menuDiv_class">
+		<strong>Menu:</strong><BR>
+		<a href="javascript:restartGame();">Restart Game</a><BR>
+		<a href="javascript:togglePause();">Toggle Pause/Unpause</a>
+	</div>
+	<HR>
+	<div class="debugDiv_class" id = "debugText_div"></div>
+	<HR>
+</body>
+</html>
