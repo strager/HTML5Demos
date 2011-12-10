@@ -1,5 +1,6 @@
 ######################
-##found this ignore on http://help.github.com/ignore-files/
+##I found this ignore on http://help.github.com/ignore-files/
+##and modified it.
 ######################
 
 # Compiled source #
@@ -40,6 +41,4 @@ Thumbs.db
 
 # Premium (For-Pay) Frameworks Not Fit for Distribution #
 ######################
-#/projects/FlyerGame/FlyerGame_ImpactJS/lib/impact
-projects/FlyerGame/FlyerGame_ImpactJS/lib/impact/*
-#projects/FlyerGame/FlyerGame_ImpactJS/lib/impact
+projects/FlyerGame/FlyerGame_ImpactJS/lib/impact/
