@@ -108,7 +108,7 @@ MyGame = ig.Game.extend({
 	doSetupStage : function () {
 				
 		//SCORE
-		this.setScore (100);
+		this.setScore (0);
 	},
 	
 	//SETUP SPRITES
