@@ -1,6 +1,14 @@
+//**************************************************
+//DECLARE THIS PAGE AS A MODULE
+//**************************************************
 ig.module( 
 	'game.main' 
 )
+
+//**************************************************
+//IMPORT CLASSES FROM EXTERNAL 
+//	FILES (LOADED BY index.html)
+//**************************************************
 .requires(
 	'impact.game',
 	'impact.font',
@@ -10,41 +18,113 @@ ig.module(
 	'game.entities.flyer'
 	
 )
-.defines(function(){
 
+//**************************************************
+//DEFINE CONTENT OF THIS PAGE
+//**************************************************
+.defines(function (){
+
+//**************************************************
+//DELARE CORE GAME CLASS
+//**************************************************
 MyGame = ig.Game.extend({
 	
-	//CONST
-	ENEMY_MAX_MOVEMENT_RADIUS : 3000,
-	
-	// Load a font
-	scoreText : "",
-	font: new ig.Font( 'media/arial30.png' ),
-	bgtune: new ig.Sound( 'media/gameover.*', false ),
-	
-	init: function() {
+	//**************************************************
+	//**************************************************
+	//PROPERTIES - Available inside & outside of functions
+	//**************************************************
+	//**************************************************
 		
-		// Initialize your game here; bind keys etc.
+	//DISPLAY
+	STAGE_X : 0,
+	STAGE_Y : 0,
+	STAGE_WIDTH : 800,
+	STAGE_HEIGHT : 600,
+	FRAMES_PER_SECOND : 60,
+	FLYER_MOVEMENT_RADIUS : 30, 		//increase to move more per keypress
+	STAGE_VICTORY_Y_POSITION : 30,
+	ENEMY_MAX_MOVEMENT_RADIUS : 300, //increase to raise difficulty
+	
+	//TEXT
+	scoreText : "",
+	
+	//SOUNDS
+	winGame_sound :		new ig.Sound( './media/sounds/WinGameSound.*', false ),
+	loseGame_sound :	new ig.Sound( './media/sounds/LoseGameSound.*', false ),
+	moveFlyer_sound :	new ig.Sound( './media/sounds/MoveFlyerSound.*', false ),
+	
+	//FONTS
+	font : new ig.Font( './media/fonts/arial30.png' ),
+	
+	//************************************************************
+	//************************************************************
+	//FLOW
+	//
+	//Upon refresh of the html page, the order of execution is
+	//
+	//	ig.main() ->
+	//  MyGame.init() ->
+	//	this.doSetup() ->
+	//	this.doSetupStage();
+	//	this.doSetupSprites();
+	//	this.doApplyEffects();
+	//	this.doSetupGameLoop();
+	//	this.doStartGameplay();
+	//
+	//
+	//************************************************************
+	//************************************************************
+	
+	
+	//************************************************************
+	//************************************************************
+	//FUNCTIONS 
+	//************************************************************
+	//************************************************************
+	
+	//INITIALIZE THE GAME
+	init : function () {
+		
+		// SETUP KEYS
 		ig.input.bind(ig.KEY.LEFT_ARROW, 	"left");
 		ig.input.bind(ig.KEY.RIGHT_ARROW, 	"right");
 		ig.input.bind(ig.KEY.UP_ARROW, 		"up");
 		ig.input.bind(ig.KEY.DOWN_ARROW, 	"down");
 		
-		 // Now add the file to the playlist
-        ig.music.add( this.bgtune );
-        
-        // You could also just specify the path again:
-        // ig.music.add( 'media/background-tune.*' );
-        
-        // Ready to Rock!
-        //ig.music.play()
- 
+ 		//SETUP
         this.doSetup();
 	},
 	
+	//SETUP
 	doSetup : function () {
+		this.doSetupStage();
+		this.doSetupSprites();
+		this.doApplyEffects();
+		this.doSetupGameLoop();
+		this.doStartGameplay();
+	},
+
+	//SETUP STAGE
+	doSetupStage : function () {
+				
+		//SCORE
+		this.setScore (100);
+	},
+	
+	//SETUP SPRITES
+	doSetupSprites : function () {
 		
-		//BACKGROUND
+		//REMOVE ANY EXISTING ENTITIES (IF RE-STARTING)
+		ig.system.stopRunLoop();
+		var i = 0;
+		var entities = ig.game.entities
+	    while (i < entities.length) {
+	        ig.game.entities[i].kill();
+	        ++i;
+	    }
+		
+		//BACKGROUND - Properties in the settings object overwrite base entity properties
+		var entityBackgroundSettings 	= {};
 		this.spawnEntity (EntityBackground, 0, 0);
 		
 		//BIPLANES
@@ -55,33 +135,47 @@ MyGame = ig.Game.extend({
 			
 		//BLIMPS
 		var entityBlimpSettings1 	= {speed: -this.ENEMY_MAX_MOVEMENT_RADIUS};
-		var entityBlimp1 = this.spawnEntity (EntityBlimp, 200, 200, entityBlimpSettings1);
+		var entityBlimp1 			= this.spawnEntity (EntityBlimp, 200, 200, entityBlimpSettings1);
 		var entityBlimpSettings2 	= {speed: -this.ENEMY_MAX_MOVEMENT_RADIUS/3};
-		var entityBlimp2 = this.spawnEntity (EntityBlimp, 440, 440, entityBlimpSettings2);
+		var entityBlimp2			= this.spawnEntity (EntityBlimp, 440, 440, entityBlimpSettings2);
 		
 		//DRAW THE ONSCREEN ELEMENTS
 		var entityFlyerSettings 	= {};
 		this.spawnEntity (EntityFlyer, 220, 520, entityFlyerSettings);
-		
-		//SCORE
-		this.setScore (100);
+
 
 	},
-	update: function() {
-		// Update all entities and backgroundMaps
-		this.parent();
- 		      
-      	 
-		if (ig.input.state("right")) {
-		    alert ("right");  
-		};
-		 
+	
+	//SETUP EFFECTS
+	doApplyEffects : function () {
+		
+		//NOTHING NEEDED
 	},
 	
-	draw: function() {
+	//SETUP GAME LOOP
+	doSetupGameLoop : function () {
+		
+		//NOTHING NEEDED
+		ig.system.startRunLoop();
+	},
+	
+	//SETUP STAGE
+	doStartGameplay : function () {
+		
+		//RESET DEBUG
+		setDebugText("<strong>Debug:</strong> v" + ig.version);
+	},
+	
+	update : function () {
+		// Update all entities and backgroundMaps
+		this.parent();
+
+	},
+	
+	draw : function () {
+		
 		// Draw all entities and backgroundMaps
 		this.parent();
-		
 		
 		// Add your own drawing code here
 		this.font.draw( this.scoreText, 20, 30, ig.Font.ALIGN.LEFT );
@@ -96,16 +190,16 @@ MyGame = ig.Game.extend({
 	doEndGameWithWin: function () {
 		
 		//MESSAGE
-		//addDebugText("You Won the Game!");
+		addDebugText("You Won the Game!");
 		
 		//SET SCORE
 		this.setScore (100);
 		
 		//PLAY SOUND
-		//playWinGameSound();
+		this.playWinGameSound();
 		
 		//END GAME, STOP LISTENTING TO EVENTS
-		//setInterval (onStopGame, MILLISECONDS_DELAY_BEFORE_STOP_GAME); 
+		this.onStopGame();
 		
 	
 	},
@@ -114,16 +208,16 @@ MyGame = ig.Game.extend({
 	doEndGameWithLoss: function () {
 		
 		//MESSAGE
-		//addDebugText("You Lost the Game!");
+		addDebugText("You Lost the Game!");
 		
 		//SET SCORE
 		this.setScore (-100);
 		
 		//PLAY SOUND
-		//playLoseGameSound();
+		this.playLoseGameSound();
 		
 		//END GAME
-		//setInterval (onStopGame, MILLISECONDS_DELAY_BEFORE_STOP_GAME);
+		this.onStopGame();
 	
 	},
 	
@@ -132,9 +226,27 @@ MyGame = ig.Game.extend({
 		//done on delay, so stage can redraw one last time before ending
 		//document.onkeydown = null;
 		//document.onkeyup   = null;
-		//Ticker.setPaused(true);
-	}
+		ig.system.stopRunLoop();
+		
+	},
 
+
+	//PLAY WHEN NEEDED
+	playWinGameSound : function () {
+		this.winGame_sound.play();
+	},
+	
+	//PLAY WHEN NEEDED
+	playLoseGameSound : function () {
+		this.loseGame_sound.play();
+
+	},
+
+	//PLAY WHEN NEEDED
+	playMoveFlyerSound : function () {
+		this.moveFlyer_sound.play();
+
+	}
 
 
 });
@@ -142,6 +254,48 @@ MyGame = ig.Game.extend({
 
 // Start the Game with 60fps, a resolution of 320x240, scaled
 // up by a factor of 2
-ig.main( '#canvas', MyGame, 60, 800	, 600, 1 );
+restartGame();
 
 });
+
+
+//************************************************************
+//************************************************************
+//FUNCTIONS 
+//************************************************************
+//************************************************************
+
+//JAVASCRIPT BUTTON - RESTART THE GAME
+function restartGame () {
+	
+	//IF RE-STARTING, THEN PAUSE BEFORE REBUILDING. 
+	//	THIS CLEANLY REBUILDS THE WORLD
+	if (ig.system) {
+		ig.system.stopRunLoop();	
+	}
+	ig.main( '#main_canvas', MyGame, 60, 800, 600, 1 );
+}
+
+//JAVASCRIPT BUTTON - TOGGLE PAUSE
+function togglePause () {
+	//CHECK
+	if (ig.system.running == true){
+		ig.system.stopRunLoop();
+	} else {
+		ig.system.startRunLoop();
+	}
+	//DEBUG
+	addDebugText ("Paused:" + ig.system.running);
+}
+
+//JAVASCRIPT BUTTON - REPLACE DEBUG TEXT
+function setDebugText (message_str) {
+  var debugTextElement = document.getElementById("debugText_div");
+  debugTextElement.innerHTML = message_str;
+}
+//JAVASCRIPT BUTTON - ADD TO DEBUG TEXT
+function addDebugText (message_str) {
+  var debugTextElement = document.getElementById("debugText_div");
+  debugTextElement.innerHTML += "<BR>" + message_str;
+}
+

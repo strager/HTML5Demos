@@ -107,11 +107,15 @@ function restartGame () {
 
 //JAVASCRIPT BUTTON - TOGGLE PAUSE
 function togglePause () {
+	
+	//CHECK
 	if (Ticker.getPaused() == true){
 		Ticker.setPaused(false);
 	} else {
 		Ticker.setPaused(true);
 	}
+	//DEBUG
+	addDebugText ("Paused:" + Ticker.getPaused());
 }
 
 //JAVASCRIPT BUTTON - REPLACE DEBUG TEXT

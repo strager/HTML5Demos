@@ -22,6 +22,7 @@
  //		Checkout this folder via GIT or download the zip per 'PROJECT SETUP DETAILS' above.
  
  //	WARNINGS
- //		You MUST add the ImpactJS framework to ./lib/impact/ before running the game.
+ //		1) You MUST add the ImpactJS framework to ./lib/impact/ before running the game.
+ //		So You will need a valid Impact game engine license (http://impactjs.com/) to use the tutorial and the assets provided.
  
  

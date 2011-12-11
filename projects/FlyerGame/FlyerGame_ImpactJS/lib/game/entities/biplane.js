@@ -11,7 +11,7 @@ EntityBiplane = EntityEnemy.extend({
 	
 	size: {x:41, y:36},
 	
-	animSheet: new ig.AnimationSheet( 'media/biplane.png', 41, 36 ),
+	animSheet: new ig.AnimationSheet( './media/images/biplane.png', 41, 36 ),
 	
 	init: function( x, y, settings ) {
 		this.parent( x, y, settings );

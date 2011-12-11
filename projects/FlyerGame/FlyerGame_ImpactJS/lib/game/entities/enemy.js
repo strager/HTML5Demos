@@ -10,14 +10,17 @@ EntityEnemy = ig.Entity.extend({
 	
 	size: {x:41, y:36},
 	speed: 10,
-	collides: ig.Entity.COLLIDES.FIXED,
 	
-	animSheet: new ig.AnimationSheet( 'media/biplane.png', 41, 36 ),
+	//COLLISION DATA
+	type: ig.Entity.TYPE.A,
+    checkAgainst: ig.Entity.TYPE.B,
+	collides: ig.Entity.COLLIDES.FIXED, //ACTUALLY BOUNCE OFF EACH OTHER
+	
 	
 	init: function( x, y, settings ) {
 		this.parent( x, y, settings );
 		this.maxVel.x = this.maxVel.y = 300;
-		this.addAnim( 'idle', 1, [0] );
+		this.addAnim( 'idle', 1, [0] ); //appears to be required, but sublclasses will overwrite it
 		this.vel.x = this.speed;
 		
 		//SET TICK CODE BASED ON DIRECTION OF TRAVEL
@@ -40,10 +43,6 @@ EntityEnemy = ig.Entity.extend({
 		//USE POSITION
 		this.parent();
 		
-		//COLLISION DETECTION 'DID ENEMY HIT FLYER?'
-		if (true){
-			ig.game.doEndGameWithLoss();
-		}
 	},
 	
 	updateBasedOnDirectionRight : function () {
@@ -65,15 +64,6 @@ EntityEnemy = ig.Entity.extend({
 		
 	}
 	
-	/*
- * 
-
-	//COLLISION DETECTION 'DID ENEMY HIT FLYER?'
-	if (enemy.hitTestObject(flyer_bitmapanimation) && !isGameOver) {
-		isGameOver = true;
-		doEndGameWithLoss();
-    }
- */
 });
 
 });
