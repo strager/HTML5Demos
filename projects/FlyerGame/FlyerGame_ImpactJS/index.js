@@ -139,7 +139,7 @@ MyGame = ig.Game.extend({
 		var entityBlimpSettings2 	= {speed: -this.ENEMY_MAX_MOVEMENT_RADIUS/3};
 		var entityBlimp2			= this.spawnEntity (EntityBlimp, 440, 440, entityBlimpSettings2);
 		
-		//DRAW THE ONSCREEN ELEMENTS
+		//FLYER
 		var entityFlyerSettings 	= {};
 		this.spawnEntity (EntityFlyer, 220, 520, entityFlyerSettings);
 
@@ -155,7 +155,6 @@ MyGame = ig.Game.extend({
 	//SETUP GAME LOOP
 	doSetupGameLoop : function () {
 		
-		//NOTHING NEEDED
 		ig.system.startRunLoop();
 	},
 	
@@ -221,11 +220,8 @@ MyGame = ig.Game.extend({
 	
 	},
 	
-		//STOP THE GAME
+	//STOP THE GAME
 	onStopGame: function () {
-		//done on delay, so stage can redraw one last time before ending
-		//document.onkeydown = null;
-		//document.onkeyup   = null;
 		ig.system.stopRunLoop();
 		
 	},
@@ -239,13 +235,11 @@ MyGame = ig.Game.extend({
 	//PLAY WHEN NEEDED
 	playLoseGameSound : function () {
 		this.loseGame_sound.play();
-
 	},
 
 	//PLAY WHEN NEEDED
 	playMoveFlyerSound : function () {
 		this.moveFlyer_sound.play();
-
 	}
 
 

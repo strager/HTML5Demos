@@ -51,7 +51,6 @@ EntityEnemy = ig.Entity.extend({
 		if (this.pos.x - this.size.x > ig.system.width) {
 			this.pos.x = -this.size.x;
 		} 
-
 		
 	},
 	
