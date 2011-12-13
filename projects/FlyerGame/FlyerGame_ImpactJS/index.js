@@ -62,14 +62,13 @@ MyGame = ig.Game.extend({
 	//
 	//Upon refresh of the html page, the order of execution is
 	//
-	//	ig.main() ->
 	//  MyGame.init() ->
 	//	this.doSetup() ->
-	//	this.doSetupStage();
-	//	this.doSetupSprites();
-	//	this.doApplyEffects();
-	//	this.doSetupGameLoop();
-	//	this.doStartGameplay();
+	//	this.doSetupStage() ->
+	//	this.doSetupSprites() ->
+	//	this.doApplyEffects() ->
+	//	this.doSetupGameLoop() ->
+	//	this.doStartGameplay() ->
 	//
 	//
 	//************************************************************

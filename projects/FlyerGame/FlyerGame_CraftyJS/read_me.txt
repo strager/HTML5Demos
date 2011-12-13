@@ -22,5 +22,5 @@
  //		Checkout this folder via GIT or download the zip per 'PROJECT SETUP DETAILS' above.
  
  //	WARNINGS
- //		None
+ //		index.html loads game_iframe.html. This changes the "Restart Game" button code and some things. FYI. All works well.
  

@@ -17,7 +17,7 @@ Crafty.c("Background", {
         
       	this.scoreLabel = Crafty.e("2D, Canvas, SpriteText")
             .attr({x: 20, y: 20, w: 50, h: 50})
-            .registerFont ("SyntaxError", 32, "./img/OSDM_Fnt32x32_SyntaxTerror-Copy2.png");
+            .registerFont ("SyntaxError", 32, "./media/fonts/OSDM_Fnt32x32_SyntaxTerror-Copy2.png");
             
         this.setScore (0);
     },

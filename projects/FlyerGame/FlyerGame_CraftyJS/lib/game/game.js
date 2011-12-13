@@ -13,21 +13,73 @@ var STAGE_HEIGHT = 600;
 var FRAMES_PER_SECOND = 60;
 var FLYER_MOVEMENT_RADIUS = 30; 	//increase to move more per keypress
 var STAGE_VICTORY_Y_POSITION = 30;
-var ENEMY_MAX_MOVEMENT_RADIUS = 30; //increase to raise difficulty
+var ENEMY_MAX_MOVEMENT_RADIUS = 15; //increase to raise difficulty
 
-//BACKGROUND - save reference to call its '.setScore(200)' method
+//BACKGROUND - save reference so we can call its '.setScore(200)' method
 var background = {};
 
 //TEXT
 var scoreText = "";
 
-
-/*
-
- */
-Crafty.scene("Game", function() {
+//CREATE LOADING SCENE
+Crafty.scene("LoadingScene", function() {
 	
-	//adding audio from an object
+	//SEEMS THAT *.ogg files cannot be loaded
+    Crafty.load([	
+    				"./media/fonts/OSDM_Fnt32x32_SyntaxTerror-Copy2.png",
+	   				"./media/sounds/LoseGameSound.mp3",
+					"./media/sounds/MoveFlyerSound.mp3",
+					"./media/sounds/WinGameSound.mp3", 
+    				"./media/images/flyer.png",
+    				"./media/images/background.png",
+    				"./media/images/blimp.png",
+    				"./media/images/biplane.png"
+    				], function() {
+    					
+    	//UPON LOAD COMPLETION, GO TO GAME SCENE
+        Crafty.scene("GameScene");
+    });
+});
+
+//CREATE GAME SCENE
+Crafty.scene("GameScene", function() {
+	setDebugText("0");
+	//CALL SETUP
+	doSetup();
+});
+
+//************************************************************
+//************************************************************
+//FLOW
+//
+//Upon refresh of the html page, the order of execution is
+//
+//  restartGame() ->
+//	this.doSetup() ->
+//	this.doSetupStage() ->
+//	this.doSetupSprites() ->
+//	this.doApplyEffects() ->
+//	this.doSetupGameLoop() ->
+//	this.doStartGameplay() ->
+//
+//
+//************************************************************
+//************************************************************
+
+
+//SETUP
+function doSetup () {
+	this.doSetupStage();
+	this.doSetupSprites();
+	this.doApplyEffects();
+	this.doSetupGameLoop();
+	this.doStartGameplay();
+}
+
+//SETUP STAGE
+function doSetupStage () {
+	
+	//SETUP AUDIO
 	Crafty.audio.add({
 	    "loseGameSound": ["./media/sounds/LoseGameSound.mp3", "./media/sounds/LoseGameSound.ogg"]
 	});
@@ -37,6 +89,11 @@ Crafty.scene("Game", function() {
 	Crafty.audio.add({
 	    "moveFlyerSound": ["./media/sounds/MoveFlyerSound.mp3", "./media/sounds/MoveFlyerSound.ogg"]
 	});
+	
+}
+
+//SETUP SPRITES
+function doSetupSprites () {
 	
     //BACKGROUND
     background = Crafty.e("Background");
@@ -51,28 +108,30 @@ Crafty.scene("Game", function() {
 	
 	//FLYER
     Crafty.e("Flyer").attr({x: 220, y: 520});
+    
+    
+	//SCORE
+	background.setScore (0);
+}
+
+//SETUP EFFECTS
+function doApplyEffects () {
+	//NOTHING NEEDED
 	
-});
+}
 
-// Load assets, then start Game
-Crafty.scene("Loading", function() {
+//SETUP GAME LOOP
+function doSetupGameLoop () {
+	//NOTHING NEEDED
+
+}
+
+//SETUP STAGE
+function doStartGameplay () {
 	
-	//SEEMS THAT *.ogg files cannot be loaded
-    Crafty.load([	"./img/crate.png", 
-    				"./img/OSDM_Fnt32x32_SyntaxTerror-Copy2.png",
-	   				"./media/sounds/LoseGameSound.mp3",
-					"./media/sounds/MoveFlyerSound.mp3",
-					"./media/sounds/WinGameSound.mp3", 
-    				"./media/images/flyer.png",
-    				"./media/images/background.png",
-    				"./media/images/blimp.png",
-    				"./media/images/biplane.png"
-    				], function() {
-        Crafty.scene("Game");
-    });
-});
-
-
+	//RESET DEBUG
+	setDebugText("<strong>Debug:</strong>");
+}
 
 
 
@@ -91,7 +150,6 @@ function doEndGameWithWin () {
 	//END GAME, STOP LISTENTING TO EVENTS
 	onStopGame();
 	
-
 }
 
 //OUTPUT A FAILURE MESSAGE AND 'STOP' THE GAME
@@ -133,7 +191,6 @@ function playMoveFlyerSound () {
 }
 
 
-
 //************************************************************
 //************************************************************
 //FUNCTIONS 
@@ -146,7 +203,7 @@ function restartGame () {
 	//IF RE-STARTING, THEN PAUSE BEFORE REBUILDING. 
 	//	THIS CLEANLY REBUILDS THE WORLD
 	Crafty.init(STAGE_WIDTH, STAGE_HEIGHT, FRAMES_PER_SECOND);
-    Crafty.scene("Loading");
+    Crafty.scene("LoadingScene");
     
 }
 
@@ -164,11 +221,23 @@ function togglePause () {
 
 //JAVASCRIPT BUTTON - REPLACE DEBUG TEXT
 function setDebugText (message_str) {
-	var debugTextElement = document.getElementById("debugText_div");
+	/*
+	 *	I AM NOT SURE HOW TO POSITION A CRAFTYJS GAME WITHIN A DIV
+	 *	SO I LOAD AN IFRAME WITH THE GAME. IT WORKS FINE.
+	 * 
+	 *  THIS CODE SPEAKS 'BACK' TO THE OUTER HTML PAGE
+	*/
+	var debugTextElement = parent.document.getElementById("debugText_div");
 	debugTextElement.innerHTML = message_str;
 }
 //JAVASCRIPT BUTTON - ADD TO DEBUG TEXT
 function addDebugText (message_str) {
-	var debugTextElement = document.getElementById("debugText_div");
+	/*
+	 *	I AM NOT SURE HOW TO POSITION A CRAFTYJS GAME WITHIN A DIV
+	 *	SO I LOAD AN IFRAME WITH THE GAME. IT WORKS FINE.
+	 * 
+	 *  THIS CODE SPEAKS 'BACK' TO THE OUTER HTML PAGE
+	*/
+	var debugTextElement = parent.document.getElementById("debugText_div");
 	debugTextElement.innerHTML += "<BR>" + message_str;
 }
