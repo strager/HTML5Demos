@@ -16,15 +16,17 @@
 //**************************************************
 -->
 <link href="styles/styles.css" rel="stylesheet" type="text/css" />
-<script src="./lib/easel.js"></script>
-<script src="./lib/sound.js"></script>
+         
+			<script type="text/javascript" src="lib/melonJS-0.9.1-min.js"></script>
+			<script type="text/javascript" src="screenObj.js"></script>
+            <script type="text/javascript" src="gameObj.js"></script>
 
 <!--
 //**************************************************
 //MAIN SCRIPT
 //**************************************************
 -->
-<script src="./index.js"></script>
+<script type="text/javascript" src="main.js"></script>
 </head>
 	
 <!--
@@ -33,15 +35,16 @@
 //**************************************************
 -->
 <body onload="onBodyLoad();">
+	
 	<div class="canvasHolderDiv_class" >
-		<canvas id="main_canvas" width = "800" height = "600" ></canvas>
+		<div id="main_canvas"></div>
 	</div>
 	<div class="informationDiv_class" >
 		<strong>Info: </strong>
 		<BR>
 		Title: Flyer Game
 		<BR>
-		Technology: HTML5 w/ EaselJS & SoundJS
+		Technology: HTML5 w/ MelonJS
 		<BR>
 		Instructions: Use up, down, left, right to reach the top.
 	</div> 
