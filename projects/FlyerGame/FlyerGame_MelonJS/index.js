@@ -183,13 +183,11 @@ var PlayScreen = me.ScreenObject.extend(
 	
 	doSetupStage: function()
 	{
-		//
 		
-		
-      // load a level
-		//me.levelDirector.loadLevel("area01");
+      	// reset the game manager
+		me.game.reset();
       
-      // add a default HUD to the game mngr
+		// add a default HUD to the game mngr
 		me.game.addHUD(jsApp.STAGE_X, jsApp.STAGE_Y, jsApp.STAGE_WIDTH,  jsApp.STAGE_HEIGHT);
 		
 		// add a new HUD item 
@@ -210,7 +208,7 @@ var PlayScreen = me.ScreenObject.extend(
 			me.game.add (this.background_spriteobject,1);
 			
 			//	1. I TRY to put a SpriteObject subclass on the screen - SUCCESS. 
-			var b = new BiplaneEntity(20, 20);
+			var b = new BiplaneEntity2(20, 20);
 	        me.game.add(b,2);
 			
 			
@@ -337,9 +335,10 @@ var PlayScreen = me.ScreenObject.extend(
 //	3. I TRY to put a SpriteObject subclass on the screen - SUCCESS. 
 //
 //
-//	4. I TRY to put a ObjectEntity subclass on the screen - FAIL. I think I need this for keys/movement/collision though, Right?
+//	4. I TRY to put a ObjectEntity subclass on the screen - FAIL. I think I need this for keys/movement/collision though, Right? YES
 //
 //**************************************************
+/*
 var BiplaneEntity = me.SpriteObject.extend(
 {	
 	init: function (x, y)
@@ -358,8 +357,8 @@ var BiplaneEntity = me.SpriteObject.extend(
 		}
 	}
 	
-	
 });
+*/
 
 var BiplaneEntity2 = me.ObjectEntity.extend(
 {	
@@ -368,9 +367,53 @@ var BiplaneEntity2 = me.ObjectEntity.extend(
 		// define this here instead of tiled
 		settings = {};
 		settings.image = "blimp";
-		settings.spritewidth = 64;
+		//following is only useful when using a spritesheet
+		//settings.spritewidth = 86;
+		//settings.spritewidth = 31;
 		this.parent(x,y, settings);
+		
+		this.goLeft = true;
+
+        // horizontal / vertical position
+		this.setVelocity(4, 6);
+			
+        // make it collidable
+		this.collidable = true;
+		this.type = me.game.ENEMY_OBJECT;
+	
+	},
+	
+	onCollision : function (res, obj)
+	{
+
+	},
+
+		
+	// manage the enemy movement
+	update : function ()
+	{
+		// compute the blimpEntity
+		if (this.goLeft)
+        {
+           this.vel.x = -this.accel.x;
+           if (this.pos.x  < 0)
+             this.goLeft = false;
+        }
+        else
+        {
+           this.vel.x = this.accel.x;
+           if (this.pos.x + this.width > me.game.viewport.width)
+             this.goLeft = true;
+         }
+        
+        // add the here above defined velocity
+        this.pos.add(this.vel);
+        // flip the sprite if necessary
+        this.flipX(!this.goLeft);
+        
+        return true;
 	}
+
 });
 
 
