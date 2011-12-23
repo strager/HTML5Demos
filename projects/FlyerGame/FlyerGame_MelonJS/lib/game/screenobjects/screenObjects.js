@@ -1,116 +1,165 @@
-/* -----
 
-	gameScreens
-		
-	------			*/
-
-
-/*---------------------------------------------------------------------
-
-	A title screen
-
-  ---------------------------------------------------------------------	*/
-
-var TitleScreen = me.ScreenObject.extend(
+//**************************************************
+//DELARE SCREEN #2 OF 2 : PLAY
+//**************************************************
+var PlayScreen = me.ScreenObject.extend(
 {
-	init : function()
-	{
-		this.parent(true);
-		
-		// title screen image
-		this.title         = null;
-		
-		this.font          =  null;
-		this.scrollerfont  =  null;
-		this.scrollertween = null;
-		
-		this.scroller = "A SMALL STEP BY STEP TUTORIAL FOR GAME CREATION WITH MELONJS       ";
-		this.scrollerpos = 600;
-	},
-	/* ---
-		reset function
-	   ----*/
 	
-	onResetEvent : function()
+    // constructor
+    init: function() {
+        this.parent(true);
+    },
+
+
+   onResetEvent: function()
 	{
-		if (this.title == null)
-		{
-			// init stuff if not yet done
-			this.title = me.loader.getImage("title_screen");
-			// font to display the menu items
-			this.font = new me.BitmapFont("32x32_font", 32);
-			this.font.set("left");
+		
+		this.doSetup();
+	},
+	
+	doSetup: function()
+	{
+		this.doSetupStage();
+		this.doSetupSprites();
+		this.doApplyEffects();
+		this.doSetupGameLoop();
+		this.doStartGameplay();
+	},
+	
+	doSetupStage: function()
+	{
+		
+      	// reset the game manager
+		me.game.reset();
+      
+		// add a default HUD to the game mngr
+		me.game.addHUD(jsApp.STAGE_X, jsApp.STAGE_Y, jsApp.STAGE_WIDTH,  jsApp.STAGE_HEIGHT);
+		
+		// add a new HUD item 
+		me.game.HUD.addItem("score", new ScoreObject(300, 10));
+		this.setScore (0);
+      
+	},
+	
+	doSetupSprites: function()
+	{
+		
+		// BACKGROUND
+		this.background_spriteobject = new SpriteObject (jsApp.STAGE_X, jsApp.STAGE_Y, me.loader.getImage("background"));
+		me.game.add (this.background_spriteobject, 1);
+		
+		//	BIPLANE 
+		var biplane1_enemyentity = new EnemyEntity(120, 120, "biplane", jsApp.ENEMY_MAX_MOVEMENT_RADIUS/2, -1);
+        me.game.add(biplane1_enemyentity, 2);
+		var biplane2_enemyentity = new EnemyEntity(330, 330, "biplane", jsApp.ENEMY_MAX_MOVEMENT_RADIUS/3, 1);
+        me.game.add(biplane2_enemyentity, 3);
+		
+		//	BLIMPS 
+		var blimp1_enemyentity = new EnemyEntity(200, 200, "blimp", jsApp.ENEMY_MAX_MOVEMENT_RADIUS/2, 1);
+        me.game.add(blimp1_enemyentity, 4);
+		var blimp2_enemyentity = new EnemyEntity(440, 440, "blimp", jsApp.ENEMY_MAX_MOVEMENT_RADIUS/3, -1);
+        me.game.add(blimp2_enemyentity, 5);
+		
+		//	BLIMPS 
+		var flyer_enemyentity = new FlyerEntity(220, 520);
+        me.game.add(flyer_enemyentity, 6);
+        
+		// make sure everyhting is in the right order
+		me.game.sort();
 			
-			// set the scroller
-			this.scrollerfont = new me.BitmapFont("32x32_font", 32);
-			this.scrollerfont.set("left");
-						
-		}
-      
-      // reset to default value
-      this.scrollerpos = 640;
-		
-		// a tween to animate the arrow
-		this.scrollertween = new me.Tween(this).to({scrollerpos: -2200 }, 10000).onComplete(this.scrollover.bind(this)).start();
-		
-		// enable the keyboard
-		me.input.bindKey(me.input.KEY.ENTER,	"enter", true);
-      
-      // play something
-      me.audio.play("cling");
-		
+	},
+	
+	doApplyEffects: function()
+	{
+		//NOTHING NEEDED
+	},
+	
+	doSetupGameLoop: function()
+	{
+		//NOTHING NEEDED
+		//me.state.resume();
+	},
+	
+	doStartGameplay: function()
+	{
+		//RESET DEBUG
+		setDebugText("<strong>Debug:</strong> FPS : " + me.sys.fps);
 	},
 	
 	
-	// some callback for the tween objects
-	scrollover : function()
-	{
-		// reset to default value
-		this.scrollerpos = 640;
-		this.scrollertween.to({scrollerpos: -2200 }, 10000).onComplete(this.scrollover.bind(this)).start();
+	//UPDATE THE SCORE IN THE HUD
+	setScore: function (score_num) {
+		this.scoreText = "SCORE:" + score_num;
+		me.game.HUD.updateItemValue("score", this.scoreText );
 	},
+	
+	
+	//OUTPUT A VICTORY MESSAGE AND 'STOP' THE GAME
+	doEndGameWithWin: function () {
 		
-	/*---
+		//MESSAGE
+		addDebugText("You Won the Game!");
 		
-		update function
-		 ---*/
+		//SET SCORE
+		this.setScore (100);
 		
-	update : function()
-	{
-		// enter pressed ?
-		if (me.input.isKeyPressed('enter'))
-		{
-         me.state.change(me.state.PLAY);
-		}
-		return true;
+		//PLAY SOUND
+		this.playWinGameSound();
+		
+		//END GAME, STOP LISTENTING TO EVENTS
+		this.onStopGame();
+		
+	
+	},
+	
+	//OUTPUT A FAILURE MESSAGE AND 'STOP' THE GAME
+	doEndGameWithLoss: function () {
+		
+		//MESSAGE
+		addDebugText("You Lost the Game!");
+		
+		//SET SCORE
+		this.setScore (-100);
+		
+		//PLAY SOUND
+		this.playLoseGameSound();
+		
+		//END GAME
+		this.onStopGame();
+	
+	},
+	
+	//STOP THE GAME
+	onStopGame: function () {
+		me.state.pause();
+		
 	},
 
-	
-	/*---
-	
-		the manu drawing function
-	  ---*/
-	
-	draw : function(context)
-	{
-		context.drawImage(this.title, 0,0);
-		
-		this.font.draw (context, "PRESS ENTER TO PLAY",	 20, 240);
-		this.scrollerfont.draw(context, this.scroller, this.scrollerpos, 440);
+
+	//PLAY WHEN NEEDED
+	playWinGameSound : function () {
+		me.audio.playTrack(jsApp.WIN_GAME_SOUND)
 	},
 	
-	/*---
+	//PLAY WHEN NEEDED
+	playLoseGameSound : function () {
+		me.audio.playTrack(jsApp.LOSE_GAME_SOUND);
+	},
+
+	//PLAY WHEN NEEDED
+	playMoveFlyerSound : function () {
+		me.audio.playTrack(jsApp.MOVE_FLYER_SOUND);
+	},
 	
-		the manu drawing function
-	  ---*/
-	
-	onDestroyEvent : function()
-	{
-		me.input.unbindKey(me.input.KEY.ENTER);
-		
-      //just in case
-      this.scrollertween.stop();
-   },
+	//CLEAN-UP
+	onDestroyEvent: function()
+	{  
+      // remove the HUD
+      me.game.disableHUD();
+      
+      // stop the current audio track
+      me.audio.stopTrack();
+   }
 
 });
 
