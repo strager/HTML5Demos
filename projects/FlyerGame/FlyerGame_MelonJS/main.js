@@ -1,13 +1,33 @@
-/*!
- * 
- *   melonJS
- *   http://www.melonjs.org
- *		
- *   Step by step game creation tutorial
- *
- **/
+/**
+ * Copyright (C) 2005-2012 by Rivello Multimedia Consulting (RMC).                    
+ * code [at] RivelloMultimediaConsulting [dot] com                                                  
+ *                                                                      
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the      
+ * "Software"), to deal in the Software without restriction, including  
+ * without limitation the rights to use, copy, modify, merge, publish,  
+ * distribute, sublicense, and#or sell copies of the Software, and to   
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:                                            
+ *                                                                      
+ * The above copyright notice and this permission notice shall be       
+ * included in all copies or substantial portions of the Software.      
+ *                                                                      
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF   
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR    
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.                                      
+ */
+// Marks the right margin of code *******************************************************************
 
-// game resources
+
+
+//**************************************************
+//SETUP RESOURCES
+//**************************************************
 var g_resources= [  
 
 					//fonts
@@ -24,25 +44,76 @@ var g_resources= [
                   ]; 
 
 
+//**************************************************
+//DELARE CORE GAME CLASS
+//**************************************************
 var jsApp	= 
 {	
-	/* ---
+
+	//**************************************************
+	//**************************************************
+	//PROPERTIES - Available inside & outside of functions
+	//**************************************************
+	//**************************************************
 	
-		Initialize the jsApp
-		
-		---			*/
+	//DISPLAY
+	STAGE_X : 0,
+	STAGE_Y : 0,
+	STAGE_WIDTH : 800,
+	STAGE_HEIGHT : 600,
+	FRAMES_PER_SECOND : 60,
+	FLYER_MOVEMENT_RADIUS : 30, 	//increase to move more per keypress
+	STAGE_VICTORY_Y_POSITION : 30,
+	ENEMY_MAX_MOVEMENT_RADIUS : 300, //increase to raise difficulty
+	
+	//TEXT
+	scoreText : "",
+	
+	//SOUNDS
+	//winGame_sound :		new ig.Sound( './media/sounds/WinGameSound.*', false ),
+	//loseGame_sound :	new ig.Sound( './media/sounds/LoseGameSound.*', false ),
+	//moveFlyer_sound :	new ig.Sound( './media/sounds/MoveFlyerSound.*', false ),
+	
+	//FONTS
+	//font : new ig.Font( './media/fonts/arial30.png' ),
+	
+	//************************************************************
+	//************************************************************
+	//FLOW
+	//
+	//Upon refresh of the html page, the order of execution is
+	//
+	//  jsApp.onLoad() -> this.loaded() ->
+	//	this.doSetup() ->
+	//	this.doSetupStage() ->
+	//	this.doSetupSprites() ->
+	//	this.doApplyEffects() ->
+	//	this.doSetupGameLoop() ->
+	//	this.doStartGameplay() ->
+	//
+	//
+	//************************************************************
+	//************************************************************
+	
+	
+	//************************************************************
+	//************************************************************
+	//FUNCTIONS 
+	//************************************************************
+	//************************************************************
+	
+	//INITIALIZE THE GAME
 	onload: function()
 	{
 		
-      //me.debug.renderHitBox = true;
+      	//me.debug.renderHitBox = true;
       
-      // init the video
-		if (!me.video.init('main_canvas', 800, 600))
+      	// init the video
+		if (!me.video.init('main_canvas',  jsApp.STAGE_WIDTH,  jsApp.STAGE_HEIGHT))
 		{
 			alert("Sorry but your browser does not support html 5 canvas. Please try with another one!");
-         return;
+         	return;
 		}
-		
 				
 		// initialize the "audio"
 		me.audio.init("mp3,ogg");
@@ -55,6 +126,7 @@ var jsApp	=
 
 		// load everything & display a loading screen
 		me.state.change(me.state.LOADING);
+		
 	},
 	
 	
@@ -76,13 +148,15 @@ var jsApp	=
 		me.input.bindKey(me.input.KEY.RIGHT,	"right");
 		me.input.bindKey(me.input.KEY.X,		"jump", true);
 	  
-      // start the game 
+      	// start the game 
 		me.state.change(me.state.PLAY);
 	}
 
 }; // jsApp
 
-/* the in game stuff*/
+//**************************************************
+//DELARE SCREEN #2 OF 2 : PLAY
+//**************************************************
 var PlayScreen = me.ScreenObject.extend(
 {
 	
@@ -95,43 +169,142 @@ var PlayScreen = me.ScreenObject.extend(
    onResetEvent: function()
 	{
 		
-		if (this.title == null){
-			this.title = me.loader.getImage("background");
-
-			// add our player entity in the entity pool
-			me.entityPool.add("blimpEntity", BlimpEntity);
+		this.doSetup();
+	},
+	
+	doSetup: function()
+	{
+		this.doSetupStage();
+		this.doSetupSprites();
+		this.doApplyEffects();
+		this.doSetupGameLoop();
+		this.doStartGameplay();
+	},
+	
+	doSetupStage: function()
+	{
+		//
 		
-			var background_spriteobject = new SpriteObject (0, 0, me.loader.getImage("background"));
-			me.game.add (background_spriteobject);
 		
-			//new ObjectSettings();
-			var b = new BlimpEntity (10, 10, null);
-			//me.game.add (background2_spriteobject);
-			//me.game.addEntity (BlimpEntity);
-			
-			//var y = me.entityPool.add("blimpEntity", BlimpEntity);
-			//me.game.addEntity ( new BlimpEntity() );
-			
-		}
-			
-				
       // load a level
 		//me.levelDirector.loadLevel("area01");
       
       // add a default HUD to the game mngr
-		me.game.addHUD(0,430,640,60);
+		me.game.addHUD(jsApp.STAGE_X, jsApp.STAGE_Y, jsApp.STAGE_WIDTH,  jsApp.STAGE_HEIGHT);
 		
 		// add a new HUD item 
-		me.game.HUD.addItem("score", new ScoreObject(620,10));
-		me.game.HUD.updateItemValue("score", 9707);
+		me.game.HUD.addItem("score", new ScoreObject(200,10));
+		me.game.HUD.updateItemValue("score", "Score : " + jsApp.STAGE_WIDTH);
 		
-		// make sure everyhting is in the right order
-		me.game.sort();
       
-      	// play the audio track
-      	me.audio.playTrack("LoseGameSound"); 
-      	
 	},
+	
+	doSetupSprites: function()
+	{
+		
+		//USE IF TO PREVENT - RECREATING THINGS
+		if (this.background_spriteobject == null){
+			
+			//BG
+			this.background_spriteobject = new SpriteObject (jsApp.STAGE_X, jsApp.STAGE_Y, me.loader.getImage("background"));
+			me.game.add (this.background_spriteobject,1);
+			
+			//	1. I TRY to put a SpriteObject subclass on the screen - SUCCESS. 
+			var b = new BiplaneEntity(20, 20);
+	        me.game.add(b,2);
+			
+			
+			//	2. I TRY to put a ObjectEntity subclass on the screen - FAIL. I think I need this one for keys/movement/collision though, Right?
+			//var b2 = new BiplaneEntity2(20, 20);
+	        //me.game.add(b2,3);
+	        
+			
+			// make sure everyhting is in the right order
+			me.game.sort();
+			
+		}
+	},
+	
+	doApplyEffects: function()
+	{
+		//
+	},
+	
+	doSetupGameLoop: function()
+	{
+		//
+	},
+	
+	doStartGameplay: function()
+	{
+		//RESET DEBUG
+		setDebugText("<strong>Debug:</strong> FPS : " + me.sys.fps);
+	},
+	
+	
+	
+	setScore: function (score_num) {
+		this.scoreText = "Score: " + score_num;
+	},
+	
+	
+	//OUTPUT A VICTORY MESSAGE AND 'STOP' THE GAME
+	doEndGameWithWin: function () {
+		
+		//MESSAGE
+		addDebugText("You Won the Game!");
+		
+		//SET SCORE
+		this.setScore (100);
+		
+		//PLAY SOUND
+		this.playWinGameSound();
+		
+		//END GAME, STOP LISTENTING TO EVENTS
+		this.onStopGame();
+		
+	
+	},
+	
+	//OUTPUT A FAILURE MESSAGE AND 'STOP' THE GAME
+	doEndGameWithLoss: function () {
+		
+		//MESSAGE
+		addDebugText("You Lost the Game!");
+		
+		//SET SCORE
+		this.setScore (-100);
+		
+		//PLAY SOUND
+		this.playLoseGameSound();
+		
+		//END GAME
+		this.onStopGame();
+	
+	},
+	
+	//STOP THE GAME
+	onStopGame: function () {
+		me.state.pause();
+		
+	},
+
+
+	//PLAY WHEN NEEDED
+	playWinGameSound : function () {
+		me.audio.playTrack("WinGameSound");
+	},
+	
+	//PLAY WHEN NEEDED
+	playLoseGameSound : function () {
+		me.audio.playTrack("LoseGameSound");
+	},
+
+	//PLAY WHEN NEEDED
+	playMoveFlyerSound : function () {
+		me.audio.playTrack("MoveFlyerSound");
+	},
+	
 	
 	// draw function
     draw: function(context) {
@@ -157,148 +330,95 @@ var PlayScreen = me.ScreenObject.extend(
 });
 
 
-//bootstrap :)
-window.onReady(function() 
-{
-	jsApp.onload();
+//**************************************************
+//DELARE SPRITE - ENEMY
+//
+//
+//	3. I TRY to put a SpriteObject subclass on the screen - SUCCESS. 
+//
+//
+//	4. I TRY to put a ObjectEntity subclass on the screen - FAIL. I think I need this for keys/movement/collision though, Right?
+//
+//**************************************************
+var BiplaneEntity = me.SpriteObject.extend(
+{	
+	init: function (x, y)
+	{
+		this.parent(x,y,me.loader.getImage("blimp"));
+	},
+	
+	
+	// manage the enemy movement
+	update : function ()
+	{
+		//KEYS FAIL
+		if (me.input.isKeyPressed('up'))
+		{
+		    addDebugText("Up");
+		}
+	}
+	
+	
+});
+
+var BiplaneEntity2 = me.ObjectEntity.extend(
+{	
+	init: function (x, y)
+	{
+		// define this here instead of tiled
+		settings = {};
+		settings.image = "blimp";
+		settings.spritewidth = 64;
+		this.parent(x,y, settings);
+	}
 });
 
 
+//************************************************************
+//************************************************************
+//FUNCTIONS 
+//************************************************************
+//************************************************************
 
-	/************************************************************************************/
-	/*																												*/
-	/*		an enemy Entity																					*/
-	/*																												*/
-	/************************************************************************************/
-	var BlimpEntity = me.ObjectEntity.extend(
-	{	
-		init: function (x, y, settings)
-		{
-			// define this here instead of tiled
-			//settings.image = "blimp";
-			//settings.spritewidth = 64;
-			
-			// call the parent constructor
-			//this.parent(x, y , settings);
-			
-			/*
-			this.startX = x;
-			this.endX   = x+settings.width - settings.spritewidth; // size of sprite
-			
-			
-			// make him start from the right
-			this.pos.x = x + settings.width - settings.spritewidth;
-			this.walkLeft = true;
-
-         // walking & jumping speed
-			this.setVelocity(4, 6);
-			
-         // make it collidable
-			this.collidable = true;
-			this.type = me.game.ENEMY_OBJECT;
-			
-			// bounding box
-			this.updateColRect(4,56,8,56);
-			*/
-		},
-		
-			
-		onCollision : function (res, obj)
-		{
-
-		},
-
-		
-		// manage the enemy movement
-		update : function ()
-		{
-			return true;
-		}
-	});
+//JAVASCRIPT BUTTON - RESTART THE GAME
+function restartGame () {
 	
+	jsApp.onload();
+
+}
+
+//JAVASCRIPT BUTTON - TOGGLE PAUSE
+function togglePause () {
+	//CHECK
+	if (me.state.isRunning() == true){
+		me.state.pause();
+	} else {
+		me.state.resume();
+	}
+
 	
-	/************************************************************************************/
-	/*																												*/
-	/*		an enemy Entity																					*/
-	/*																												*/
-	/************************************************************************************/
-	var CoolerBlimpEntity = me.ObjectEntity.extend(
-	{	
-		init: function (x, y, settings)
-		{
-			// define this here instead of tiled
-			settings.image = "blimp";
-			settings.spritewidth = 64;
-			
-			// call the parent constructor
-			this.parent(x, y , settings);
-			
-			this.startX = x;
-			this.endX   = x+settings.width - settings.spritewidth; // size of sprite
-			
-			
-			// make him start from the right
-			this.pos.x = x + settings.width - settings.spritewidth;
-			this.walkLeft = true;
+	//DEBUG
+	addDebugText ("Paused : " + me.state.isRunning() );
+}
 
-         // walking & jumping speed
-			this.setVelocity(4, 6);
-			
-         // make it collidable
-			this.collidable = true;
-			this.type = me.game.ENEMY_OBJECT;
-			
-			// bounding box
-			this.updateColRect(4,56,8,56);
-			
-		},
-		
-			
-		onCollision : function (res, obj)
-		{
-				
-			// res.y >0 means touched by something on the bottom
-			// which mean at top position for this one
-			if (this.alive && (res.y > 0) && obj.falling)
-			{
-				// make it flicker
-				this.flicker(45);
-			}
-		},
+//JAVASCRIPT BUTTON - REPLACE DEBUG TEXT
+function setDebugText (message_str) {
+  var debugTextElement = document.getElementById("debugText_div");
+  debugTextElement.innerHTML = message_str;
+}
+//JAVASCRIPT BUTTON - ADD TO DEBUG TEXT
+function addDebugText (message_str) {
+  var debugTextElement = document.getElementById("debugText_div");
+  debugTextElement.innerHTML += "<BR>" + message_str;
+}
 
-		
-		// manage the enemy movement
-		update : function ()
-		{
-			// do nothing if not visible
-			if (!this.visible && !this.flickering)
-				return false;
-				
-			if (this.alive)
-			{
-				if (this.walkLeft && this.pos.x <= this.startX)
-				{
-					this.walkLeft = false;
-				}
-				else if (!this.walkLeft && this.pos.x >= this.endX)
-				{
-					this.walkLeft = true;
-				}
-            this.doWalk(this.walkLeft);
-			}
-			else
-			{
-				this.vel.x = 0;
-			}
-			// check & update movement
-			updated = this.updateMovement();
-				
-			if (updated)
-			{
-				// update the object animation
-				this.parent();
-			}
-			return updated;
-		}
-	});
+//**************************************************
+//BOOTSTRAP
+//**************************************************
+window.onReady(function() 
+{
+	restartGame();
+});
+
+
 	

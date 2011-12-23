@@ -41,7 +41,7 @@ MyGame = ig.Game.extend({
 	STAGE_WIDTH : 800,
 	STAGE_HEIGHT : 600,
 	FRAMES_PER_SECOND : 60,
-	FLYER_MOVEMENT_RADIUS : 30, 		//increase to move more per keypress
+	FLYER_MOVEMENT_RADIUS : 30, 	//increase to move more per keypress
 	STAGE_VICTORY_Y_POSITION : 30,
 	ENEMY_MAX_MOVEMENT_RADIUS : 300, //increase to raise difficulty
 	

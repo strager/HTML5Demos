@@ -514,3 +514,152 @@ function onStopGame () {
 	document.onkeyup   = null;
 	Ticker.setPaused(true);
 }
+
+
+//OTHER SCRAPS COPIED FROM ELSEWHERE
+//OTHER SCRAPS COPIED FROM ELSEWHERE
+//OTHER SCRAPS COPIED FROM ELSEWHERE
+//OTHER SCRAPS COPIED FROM ELSEWHERE
+//OTHER SCRAPS COPIED FROM ELSEWHERE
+//OTHER SCRAPS COPIED FROM ELSEWHERE
+//OTHER SCRAPS COPIED FROM ELSEWHERE
+//OTHER SCRAPS COPIED FROM ELSEWHERE
+//OTHER SCRAPS COPIED FROM ELSEWHERE
+//OTHER SCRAPS COPIED FROM ELSEWHERE
+//OTHER SCRAPS COPIED FROM ELSEWHERE
+//OTHER SCRAPS COPIED FROM ELSEWHERE
+
+//**************************************************
+//DELARE SPRITE - ENEMY
+//**************************************************
+var BlimpEntity = me.ObjectEntity.extend(
+{	
+	init: function (x, y, settings)
+	{
+		// define this here instead of tiled
+		//settings.image = "blimp";
+		//settings.spritewidth = 64;
+		
+		// call the parent constructor
+		//this.parent(x, y , settings);
+		
+		/*
+		this.startX = x;
+		this.endX   = x+settings.width - settings.spritewidth; // size of sprite
+		
+		
+		// make him start from the right
+		this.pos.x = x + settings.width - settings.spritewidth;
+		this.walkLeft = true;
+
+     // walking & jumping speed
+		this.setVelocity(4, 6);
+		
+     // make it collidable
+		this.collidable = true;
+		this.type = me.game.ENEMY_OBJECT;
+		
+		// bounding box
+		this.updateColRect(4,56,8,56);
+		*/
+	},
+	
+		
+	onCollision : function (res, obj)
+	{
+
+	},
+
+	
+	// manage the enemy movement
+	update : function ()
+	{
+		return true;
+	}
+});
+
+
+//**************************************************
+//DELARE SPRITE - ENEMY
+//**************************************************
+var CoolerBlimpEntity = me.ObjectEntity.extend(
+{	
+	init: function (x, y, settings)
+	{
+		// define this here instead of tiled
+		settings.image = "blimp";
+		settings.spritewidth = 64;
+		
+		// call the parent constructor
+		this.parent(x, y , settings);
+		
+		this.startX = x;
+		this.endX   = x+settings.width - settings.spritewidth; // size of sprite
+		
+		
+		// make him start from the right
+		this.pos.x = x + settings.width - settings.spritewidth;
+		this.walkLeft = true;
+
+     // walking & jumping speed
+		this.setVelocity(4, 6);
+		
+     // make it collidable
+		this.collidable = true;
+		this.type = me.game.ENEMY_OBJECT;
+		
+		// bounding box
+		this.updateColRect(4,56,8,56);
+		
+	},
+	
+		
+	onCollision : function (res, obj)
+	{
+			
+		// res.y >0 means touched by something on the bottom
+		// which mean at top position for this one
+		if (this.alive && (res.y > 0) && obj.falling)
+		{
+			// make it flicker
+			this.flicker(45);
+		}
+	},
+
+	
+	// manage the enemy movement
+	update : function ()
+	{
+		// do nothing if not visible
+		if (!this.visible && !this.flickering)
+			return false;
+			
+		if (this.alive)
+		{
+			if (this.walkLeft && this.pos.x <= this.startX)
+			{
+				this.walkLeft = false;
+			}
+			else if (!this.walkLeft && this.pos.x >= this.endX)
+			{
+				this.walkLeft = true;
+			}
+        this.doWalk(this.walkLeft);
+		}
+		else
+		{
+			this.vel.x = 0;
+		}
+		// check & update movement
+		updated = this.updateMovement();
+			
+		if (updated)
+		{
+			// update the object animation
+			this.parent();
+		}
+		return updated;
+	}
+});
+
+	
