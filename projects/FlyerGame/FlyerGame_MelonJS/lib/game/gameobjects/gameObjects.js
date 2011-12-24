@@ -33,8 +33,19 @@ var EnemyEntity = me.ObjectEntity.extend(
 
 		//SET TICK CODE BASED ON DIRECTION OF TRAVEL
 		if (this.xDirection > 0) {
+			
+			//FACE-FORWARD - ONE-TIME CALLED
+			this.flipX(false);
+			
+			//SETUP UPDATE CODE - REPEATEDLY CALLED
 			this.updateBasedOnDirection = function () {this.updateBasedOnDirectionRight();}
+			
 		} else {
+			
+			//FACE-FORWARD - ONE-TIME CALLED
+			this.flipX(true);
+			
+			//SETUP UPDATE CODE - REPEATEDLY CALLED
 			this.updateBasedOnDirection = function () {this.updateBasedOnDirectionLeft();}		
 		}
 			
@@ -44,7 +55,8 @@ var EnemyEntity = me.ObjectEntity.extend(
 	// HANDLE COLLISION
 	onCollision : function (res, obj)
 	{
-		addDebugText ("collision2");
+		//TRACE
+		addDebugText ("Enemy Reports Collision");
 	},
 
 		
@@ -55,10 +67,11 @@ var EnemyEntity = me.ObjectEntity.extend(
 		//SET POSITION
 		this.updateBasedOnDirection();
 		
+		// IRONICALLY - This line allows *Flyer* to detect the Enemy.
+		me.game.collide(this);
+		
 		//UPDATE
 		this.parent();
-		return;
-		
 	},
 	
 	updateBasedOnDirection : function () {
@@ -132,7 +145,9 @@ var FlyerEntity = me.ObjectEntity.extend(
 	//HANDLE COLLISION
 	onCollision : function (res, obj)
 	{
-		addDebugText ("collision");
+		//TRACE
+		addDebugText ("Flyer Reports Collision");
+		me.state.current().doEndGameWithLoss();
 
 	},
 
@@ -153,6 +168,10 @@ var FlyerEntity = me.ObjectEntity.extend(
      		this.moveOnce(0, jsApp.FLYER_MOVEMENT_RADIUS);
   		}
         
+		// IRONICALLY - This line allows *ENEMY* to detect the Flyer.
+		//
+		// NOT NEEDED   me.game.collide(this);
+
         // UPDATE
 		this.parent();
         
@@ -228,7 +247,7 @@ var ScoreObject = me.HUD_Item.extend({
 	draw : function (context, x, y)
 	{
 		//REDRAW
-		this.font.draw (context, this.value, this.pos.x +x, this.pos.y+y);
+		this.font.draw (context, "SCORE:" + this.value, this.pos.x +x, this.pos.y+y);
 	}
 
 });

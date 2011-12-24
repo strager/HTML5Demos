@@ -107,7 +107,7 @@ var jsApp	=
 	{
 		
 		//VERY HELPFUL TO SHOW A RED BOX AROUND EVERY 'SPRITE', SET TO TRUE DURING DEBUGGING
-      	me.debug.renderHitBox = true;
+      	//me.debug.renderHitBox = true;
       
       	// init the video
       	var useDoubleBuffering = true;
@@ -144,7 +144,7 @@ var jsApp	=
 		me.state.set(me.state.PLAY, new PlayScreen());
       
       	// set a global fading transition for the screen
-		me.state.transition("fade", "#FFFFFF", 15);
+		me.state.transition("fade", "#FFFFFF", 250);
       
 		// enable the keyboard
 		me.input.bindKey(me.input.KEY.LEFT,		"left", 	true); //true = can't hold down key
@@ -167,8 +167,9 @@ var jsApp	=
 //JAVASCRIPT BUTTON - RESTART THE GAME
 function restartGame () {
 	
-	//LOAD/RELOAD THE CORE CLASS
-	jsApp.onload();
+	me.state.resume();
+	// (re)start the game 
+	me.state.change(me.state.PLAY);
 
 }
 
@@ -202,7 +203,7 @@ function addDebugText (message_str) {
 //**************************************************
 window.onReady(function() 
 {
-	restartGame();
+	jsApp.onload();
 });
 
 

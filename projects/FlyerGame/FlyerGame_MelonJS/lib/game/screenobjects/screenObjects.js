@@ -5,6 +5,8 @@
 var PlayScreen = me.ScreenObject.extend(
 {
 	
+	scoreObject: null,
+	
     // constructor
     init: function() {
         this.parent(true);
@@ -35,8 +37,9 @@ var PlayScreen = me.ScreenObject.extend(
 		// add a default HUD to the game mngr
 		me.game.addHUD(jsApp.STAGE_X, jsApp.STAGE_Y, jsApp.STAGE_WIDTH,  jsApp.STAGE_HEIGHT);
 		
-		// add a new HUD item 
-		me.game.HUD.addItem("score", new ScoreObject(300, 10));
+		// add a new HUD item
+		this.scoreObject = new ScoreObject(795, 2); 
+		me.game.HUD.addItem("score", this.scoreObject);
 		this.setScore (0);
       
 	},
@@ -77,7 +80,6 @@ var PlayScreen = me.ScreenObject.extend(
 	doSetupGameLoop: function()
 	{
 		//NOTHING NEEDED
-		//me.state.resume();
 	},
 	
 	doStartGameplay: function()
@@ -89,8 +91,7 @@ var PlayScreen = me.ScreenObject.extend(
 	
 	//UPDATE THE SCORE IN THE HUD
 	setScore: function (score_num) {
-		this.scoreText = "SCORE:" + score_num;
-		me.game.HUD.updateItemValue("score", this.scoreText );
+		me.game.HUD.updateItemValue("score", score_num);
 	},
 	
 	
