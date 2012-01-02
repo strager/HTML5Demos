@@ -1,0 +1,84 @@
+<!--
+//**************************************************
+//HTML HEADER
+//**************************************************
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>HTML5 FlyerGame by RivelloMultimediaConsulting.com</title>
+
+
+<!--
+//**************************************************
+//IMPORTS
+//**************************************************
+-->
+<link href="styles/styles.css" rel="stylesheet" type="text/css" />
+
+<!--
+//**************************************************
+//MAIN SCRIPT
+//**************************************************
+-->
+</head>
+
+
+<!--
+//**************************************************
+//HTML CONTENT
+//**************************************************
+-->
+<script type="text/javascript">
+
+	<!--
+		//I AM NOT SURE HOW TO POSITION A CRAFTYJS GAME WITHIN A DIV
+		//SO I LOAD THE GAME THROUGH ITS OWN HTML INTO AN IFRAME. IT WORKS FINE.
+		//
+		//THIS JAVASCRIPT FOR THE TEXT BUTTONS BELOW
+	-->
+	var game_iframe;
+	onLoad = function (platform_str) {
+		
+		//WHEN PAGE LOADS, DEFAULT PLATFORM IS HTML5. USER MAY CLICK BUTTONS TO CHANGE PLATFORM
+		if (platform_str == null) {
+			platform_str = "flash";
+		}
+		document.getElementById('game_iframe').src ="./game_iframe.html?platform=" + platform_str;
+		game_iframe = document.getElementById('game_iframe').contentWindow;
+		
+	}
+</script>
+
+
+<body onload='onLoad()'>
+						
+	<div class="canvasHolderDiv_class" >
+		<!--
+			//I AM NOT SURE HOW TO POSITION A CRAFTYJS GAME WITHIN A DIV
+			//SO I LOAD AN IFRAME WITH THE GAME. IT WORKS FINE.
+		-->
+		<iframe  id = "game_iframe" width = "100%" height = "100%" scrolling="no" style="border: 0;"></iframe> 
+	</div>
+	<div class="informationDiv_class" >
+		<strong>Info: </strong>
+		<BR>
+		Title: Flyer Game
+		<BR>
+		Technology: <a href="javascript:onLoad('html5');">HTML5 (<b>Still Broken</b>)</a> or <a href="javascript:onLoad('flash');" >Flash (default)</a> w/ Spaceport.io. Click to view each one.
+		<BR>
+		Instructions: Use up, down, left, right to reach the top.
+	</div> 
+	<HR>
+	<div class="menuDiv_class">
+		<strong>Menu:</strong><BR>
+		<a href="javascript:game_iframe.restartGame();">Restart Game</a><BR>
+		<a href="javascript:game_iframe.togglePause();">Toggle Pause/Unpause</a><BR>
+		<a href="javascript:game_iframe.addDebugText('Test!');">Add Debug Text</a>
+	</div>
+	<HR>
+	<div class="debugDiv_class" id = "debugText_div"></div>
+	<HR>
+</body>
+</html>
